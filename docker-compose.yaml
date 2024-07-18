@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+
+  mongodb:
+    image: mongo
+    ports:
+     - 27017:27017
+    environment:
+     - MONGO_INITDB_ROOT_USERNAME=admin
+     - MONGO_INITDB_ROOT_PASSWORD=senha
+  
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+     - 8081:8081
+    environment:
+     - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+     - ME_CONFIG_MONGODB_ADMINPASSWORD=senha
+     - ME_CONFIG_MONGODB_SERVER=mongodb
+    depends_on:
+     - "mongodb"
+  
+  app:
+    build: .
+    ports:
+     - 3000:3000
+    environment:
+     - MONGO_USERNAME=admin
+     - MONGO_SENHA=senha
+    depends_on:
+      - "mongo-express" #não precisa, porque a conexão só é feita quando a pagina é aberta, mas não custa nada

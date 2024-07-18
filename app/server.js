@@ -5,8 +5,9 @@ let MongoClient = require('mongodb').MongoClient;
 let bodyParser = require('body-parser');
 let app = express();
 
-const DB_USER = admin
-const DB_PASS = senha
+const DB_USER = process.env.MONGO_USERNAME
+const DB_SENHA = process.env.MONGO_SENHA
+
 
 app.use(bodyParser.urlencoded({
   extended: true
@@ -17,14 +18,14 @@ app.get('/', function (req, res) {
     res.sendFile(path.join(__dirname, "index.html"));
   });
 
-let mongoUrlDockerCompose = `mongodb://${DB_USER}:${DB_PASS}@mongodb`;
+let mongoUrlDockerCompose = `mongodb://${DB_USER}:${DB_SENHA}@mongodb`;
 
 
 let mongoClient = { useNewUrlParser: true, useUnifiedTopology: true };
 
 
-let database = "my-db";
-let collection = "my-collection";
+let database = "devopsDB";
+let collection = "devopsCol";
 
 app.get('/fetch-data', function (req, res) {
   let resposta = {};
@@ -33,7 +34,7 @@ app.get('/fetch-data', function (req, res) {
 
     let db = client.db(database);
 
-    let queryComplexa = { myid: 1 };
+    let queryComplexa = { id: 1 };
 
     db.collection(collection).findOne(queryComplexa, function (err, result) {
       if (err) throw err;
