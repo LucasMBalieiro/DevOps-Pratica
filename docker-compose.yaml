@@ -1,7 +1,5 @@
-version: "3.8"
-
 services:
-
+  
   mongodb:
     image: mongo
     ports:
@@ -9,6 +7,15 @@ services:
     environment:
      - MONGO_INITDB_ROOT_USERNAME=admin
      - MONGO_INITDB_ROOT_PASSWORD=senha
+
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo mongo:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
+
   
   mongo-express:
     image: mongo-express
@@ -20,7 +27,8 @@ services:
      - ME_CONFIG_MONGODB_ADMINPASSWORD=senha
      - ME_CONFIG_MONGODB_SERVER=mongodb
     depends_on:
-     - "mongodb"
+      mongodb:
+        condition: service_healthy
   
   app:
     build: .
@@ -30,4 +38,5 @@ services:
      - MONGO_USERNAME=admin
      - MONGO_SENHA=senha
     depends_on:
-      - "mongo-express" #não precisa, porque a conexão só é feita quando a pagina é aberta, mas não custa nada
+      mongodb:
+        condition: service_healthy
